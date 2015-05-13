@@ -1,0 +1,30 @@
+<project name="Agents" default="build.target">
+	
+	<target name="build.target">
+		
+		<mkdir dir="./deploy"/>
+		
+		<zip destfile="./deploy/AgentFiltr.zip">
+			<zipfileset dir="./bin/ru/dvo/iacp/is/iacpaas/mas/agents" 
+				includes="AgentFiltr.class, AgentFiltrImpl.class, AgentFiltrImpl$Buffer.class, 
+					AgentFiltr$TaskMessageResultCreator.class"
+				prefix="ru/dvo/iacp/is/iacpaas/mas/agents"></zipfileset>
+		</zip>
+		
+		<zip destfile="./deploy/MyInitAgent.zip">
+			<zipfileset dir="./bin/ru/dvo/iacp/is/iacpaas/mas/agents" 
+				includes="MyInitAgent.class, MyInitAgentImpl.class, MyInitAgent$StatusMessageResultCreator.class, 
+				MyInitAgent$InitMessageResultCreator.class" prefix="ru/dvo/iacp/is/iacpaas/mas/agents"></zipfileset>
+		</zip>
+		
+		<zip destfile="./deploy/MyAgent.zip">
+			<zipfileset dir="./bin/ru/dvo/iacp/is/iacpaas/mas/agents" 
+				includes="MyAgent.class, MyAgentImpl.class, MyAgent$TaskMessageResultCreator.class, 
+					MyAgentImpl$FarmList.class, MyAgentImpl$Drug.class, MyAgentImpl$Archive.class,
+					MyAgentImpl$Person.class, MyAgentImpl$Treatment.class, MyAgentImpl$Solver.class"
+				prefix="ru/dvo/iacp/is/iacpaas/mas/agents"></zipfileset>
+		</zip>
+		
+	</target>
+
+</project>
