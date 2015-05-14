@@ -44,6 +44,7 @@ public final class MyAgentImpl extends MyAgent {
 	private static final String FARM_GROUP = "фармГруппа";
 	private static final String THERAPY = "основная терапия";
 	private static final String DRUGS = "вариант ДВ";
+	private static final String EFFECT = "эффект";
 	
 	private MyAgentImpl link = this;
 	private String nameHistory;
@@ -76,7 +77,6 @@ public final class MyAgentImpl extends MyAgent {
 		private ArrayList<String> feature;
 		
 		private IConcept getPerson() throws StorageException {
-			
 			for (int i = 0; i < children.length; i++) {
 				if (children[i].getName().equals(namePerson)) {
 					return children[i];
@@ -86,7 +86,6 @@ public final class MyAgentImpl extends MyAgent {
 		}
 		
 		private IConcept getHistory() throws StorageException {
-
 			IConcept[] arrayHistory = person.nextSetByMeta(HISTORY);
 			for (int i = 0; i < arrayHistory.length; i++) {
 				if (arrayHistory[i].getName().equals(nameHistory)) {
@@ -120,7 +119,6 @@ public final class MyAgentImpl extends MyAgent {
 		}
 		
 		public String getDiagnosis() throws StorageException {
-			
 			if (history.hasRelation(DIAGNOSIS)) {						
 				IConcept diagnosis = history.gotoByMeta(DIAGNOSIS);
 				feature = new ArrayList<String>();
@@ -153,7 +151,6 @@ public final class MyAgentImpl extends MyAgent {
 		}
 	
 		public String[] getFeature() {
-			
 			if (!feature.isEmpty()) {
 				String[] array = feature.toArray(new String[feature.size()]);
 				return array;
@@ -162,7 +159,6 @@ public final class MyAgentImpl extends MyAgent {
 		}
 
 		public String[] getSimptom() throws StorageException {
-			
 			if (history.hasRelation(DN)) {
 				IConcept simptom = history.gotoByMeta(DN).getChildren()[0];
 				IConcept[] children = simptom.getChildren();
@@ -178,7 +174,6 @@ public final class MyAgentImpl extends MyAgent {
 		}
 		
 		public String[] getPreparation() throws StorageException {
-				
 			if (history.hasRelation(APPOINT)) {
 				IConcept[] preparation = history.gotoByMeta(APPOINT).nextSetByMeta(PREPARATION);
 				ArrayList<String> list = new ArrayList<String>();
@@ -210,7 +205,6 @@ public final class MyAgentImpl extends MyAgent {
 		}
 	}
 	
-	
 	public class Treatment {
 		
 		private IConcept[] allConceptsArchive;
@@ -227,7 +221,6 @@ public final class MyAgentImpl extends MyAgent {
 		}
 		
 		public HashMap<String, String[]> setGroupDrugs(String diagnosis) throws StorageException {
-			
 			IConcept treatment = getDiagnosis(diagnosis);
 			
 			if (treatment != null) {	
@@ -264,7 +257,6 @@ public final class MyAgentImpl extends MyAgent {
 		
 	}
 	
-	
 	public class Solver {
 		
 		private Treatment treatment = new Treatment();
@@ -289,17 +281,17 @@ public final class MyAgentImpl extends MyAgent {
 			
 			for (Map.Entry<String, String[]> entry : groupDrug.entrySet()) {
 				String[] value = entry.getValue();
+				String key = entry.getKey();
 				
 				for (int i = 0; i < value.length; i++) {
-					recommended.generateWithName(DRUG, value[i]);
+					IConceptGenerator recommendedDrug = recommended.generateWithName(DRUG, value[i]);
+					recommendedDrug.generateWithValue(EFFECT, key);
 				}	
 			}
 		}
 
 		public void drawInterface() throws StorageException {
-			
 			if (outInforesource.generateFromAxiom().hasRelation(ROOT)) {
-				
 				IConcept axiom = outInforesource.getAxiom();
 				IRelation[] incomingRelations = axiom.gotoByMeta(ROOT).getIncomingRelations();
 				incomingRelations[0].delete(link);
@@ -332,7 +324,6 @@ public final class MyAgentImpl extends MyAgent {
 		}
 		
 		public Solver() throws StorageException {
-			
 			if (outInforesource == null) {
 				info("Inputs inforesource not found");
 				return;
@@ -340,9 +331,7 @@ public final class MyAgentImpl extends MyAgent {
 			
 			drawInterface();
 			addDrug();
-
 		}
-			
 	}
 	
 	public void runProduction(ru.dvo.iacp.is.iacpaas.mas.messages.TaskMessage msg, TaskMessageResultCreator rc) throws PlatformException {
