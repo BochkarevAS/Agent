@@ -12,6 +12,21 @@ import ru.dvo.iacp.is.iacpaas.storage.generator.IInforesourceGenerator;
 
 public final class AgentFiltrImpl extends AgentFiltr {
 
+	private static final String СONTRAIND = "противопоказания";
+	private static final String OTHER_DRUGS = "Взаимодействие с другими ЛС";
+	private static final String DRUGS = "ЛС";
+	private static final String LOWER_AGE = "нижний возраст";
+	private static final String ROOT = "объяснениеЛечения";
+	private static final String INFO_HISTORY = "инфо из ИБ";
+	private static final String RECOMMENDED = "рекомендуемые";
+	private static final String DEFLECTABLE = "отклоняемые";
+	private static final String WARNING = "предупреждения";
+	private static final String INCOMPATIBLE = "несовместимая пара";
+	private static final String DIAGNOSIS = "диагноз";
+	private static final String DRUG = "ЛС";
+	private static final String FEATURE = "особенность";
+	private static final String AGE = "возраст";
+	
 	private AgentFiltrImpl link = this;
 	private IInforesource inforesource;
 	private IInforesourceGenerator generator;
@@ -22,17 +37,10 @@ public final class AgentFiltrImpl extends AgentFiltr {
 	
 	public class FarmList {
 		
-		private static final String СONTRAIND = "противопоказания";
-		private static final String OTHER_DRUGS = "Взаимодействие с другими ЛС";
-		private static final String DRUGS = "ЛС";
-		private static final String AGE = "нижний возраст";
-		
-		private IConcept drug;
 		private IConcept[] allConceptsFarmList;
 		private IConcept[] children;
 		
-		private IConcept getDrug(String name) throws StorageException {
-			
+		private IConcept getDrug(String name) throws StorageException {	
 			for (int i = 0; i < children.length; i++) {
 				if (name.equals(children[i].getName())) {
 					return children[i];
@@ -41,9 +49,8 @@ public final class AgentFiltrImpl extends AgentFiltr {
 			return null;
 		}
 		
-		public String[] getContraind(String name) throws StorageException {
-			
-			drug = getDrug(name);
+		public String[] getContraind(String name) throws StorageException {		
+			IConcept drug = getDrug(name);
 			
 			if ((drug != null) && (drug.hasRelation(СONTRAIND))) {
 				IConcept[] child = drug.gotoByMeta(СONTRAIND).getChildren();
@@ -58,20 +65,18 @@ public final class AgentFiltrImpl extends AgentFiltr {
 			return null;
 		}
 
-		public boolean getInteraction(String drugs) throws StorageException {
+		public boolean getInteraction(String name) throws StorageException {
+			IConcept drug = getDrug(name);
 			
-			for (int i = 0; i < children.length; i++) {
-				drug = children[i];
-				if (drug.hasRelation(OTHER_DRUGS)) {
-					int counter = drug.gotoByMeta(OTHER_DRUGS).getChildren().length;
+			if ((drug != null) && (drug.hasRelation(OTHER_DRUGS))) {
+				int counter = drug.gotoByMeta(OTHER_DRUGS).getChildren().length;
 
-					for (int j = 0; j < counter; j++) {
-						IConcept conceptOther = drug.gotoByMeta(OTHER_DRUGS).getChildren()[j];
-						String value = conceptOther.getChildren()[0].getValue();
-					
-						if (value.equals(drugs)) {
-							return false;
-						}
+				for (int j = 0; j < counter; j++) {
+					IConcept conceptOther = drug.gotoByMeta(OTHER_DRUGS).getChildren()[j];
+					String value = conceptOther.getChildren()[0].getValue();
+				
+					if (value.equals(drug)) {
+						return false;
 					}
 				}
 			}
@@ -79,11 +84,10 @@ public final class AgentFiltrImpl extends AgentFiltr {
 		}
 		
 		public double getAge(String name) throws StorageException {
+			IConcept drug = getDrug(name);
 			
-			drug = getDrug(name);
-			
-			if ((drug != null) && (drug.hasRelation(AGE)) && (drug.getName().equals(name))) {
-				double age = drug.gotoByMeta(AGE).getValue();
+			if ((drug != null) && (drug.hasRelation(LOWER_AGE)) && (drug.getName().equals(name))) {
+				double age = drug.gotoByMeta(LOWER_AGE).getValue();
 				return age;
 			}
 			return 0;
@@ -101,21 +105,9 @@ public final class AgentFiltrImpl extends AgentFiltr {
 			allConceptsFarmList = infoFarmList.getAllConcepts();
 			children = allConceptsFarmList[0].nextSetByMeta(DRUGS); //ФармСправочник
 		}
-		
 	}
 	
 	public class Buffer {
-		
-		private static final String ROOT = "объяснениеЛечения";
-		private static final String INFO_HISTORY = "инфо из ИБ";
-		private static final String RECOMMENDED = "рекомендуемые";
-		private static final String DEFLECTABLE = "отклоняемые";
-		private static final String WARNING = "предупреждения";
-		private static final String INCOMPATIBLE = "несовместимая пара";
-		private static final String DIAGNOSIS = "диагноз";
-		private static final String DRUG = "ЛС";
-		private static final String FEATURE = "особенность";
-		private static final String AGE = "возраст";
 		
 		private IConceptGenerator root;
 		private IConceptGenerator deflectable;
@@ -129,7 +121,6 @@ public final class AgentFiltrImpl extends AgentFiltr {
 		private FarmList farmList = new FarmList();
 		
 		private void setInfoPerson() throws StorageException {
-			
 			IConceptGenerator mapHistory = (IConceptGenerator) root.gotoByMeta(INFO_HISTORY);	
 			ArrayList<String> list = new ArrayList<String>();
 			
@@ -145,7 +136,6 @@ public final class AgentFiltrImpl extends AgentFiltr {
 		}
 		
 		private void filterAge() throws StorageException {
-
 			recommended = root.gotoByMeta(RECOMMENDED).getChildren();
 			deflectable = (IConceptGenerator) root.gotoByMeta(DEFLECTABLE);
 			double ageDrug = 0;
@@ -154,14 +144,14 @@ public final class AgentFiltrImpl extends AgentFiltr {
 				ageDrug = farmList.getAge(recommended[i].getName());
 				
 				if (!(ageDrug <= age)) {
-					deflectable.generateWithName(DRUG, recommended[i].getName());
+					IConceptGenerator deflectableDrug = deflectable.generateWithName(DRUG, recommended[i].getName());
+					deflectableDrug.generateWithValue(СONTRAIND, "Неподходящий возраст");
 					recommended[i].delete(link);
 				} 
 			}
 		}
 
 		private void filterFeature() throws StorageException {
-			
 			recommended = root.gotoByMeta(RECOMMENDED).getChildren();
 			
 			label: for (int i = 0; i < recommended.length; i++) {
@@ -173,9 +163,9 @@ public final class AgentFiltrImpl extends AgentFiltr {
 					
 					   for (int j = 0; j < contraind.length; j++) {
 						   for (int k = 0; k < feature.length; k++) {
-							
 							   if (contraind[j].equals(feature[k])) {
-							  	   warning.generateWithName(DRUG, recommended[i].getName());
+								   IConceptGenerator deflectableDrug = deflectable.generateWithName(DRUG, recommended[i].getName());
+								   deflectableDrug.generateWithValue(СONTRAIND, feature[k]);
 								   recommended[i].delete(link);
 								   continue label; 
 							   }
@@ -185,15 +175,12 @@ public final class AgentFiltrImpl extends AgentFiltr {
 		}
 		
 		public Buffer() throws StorageException {
-			
 			root = (IConceptGenerator) generator.generateFromAxiom().gotoByMeta(ROOT);
 			
 			setInfoPerson();
 			filterAge();
 			filterFeature();
-			
 		}
-		
 	}
 	
 	public void runProduction(ru.dvo.iacp.is.iacpaas.mas.messages.TaskMessage msg, TaskMessageResultCreator rc) throws PlatformException {
