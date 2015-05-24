@@ -23,8 +23,6 @@ public final class MyAgentImpl extends MyAgent {
 	private static final String ENTRY_PROPERTY = "входной параметр";
 	private static final String DIAGNOSIS = "диагноз";
 	private static final String DN = "ДН";
-	private static final String PREPARATION = "препарат";
-	private static final String APPOINT = "назначение";
 	private static final String PASSPORT = "паспортная часть";
 	private static final String DATE = "дата рожд";
 	private static final String COMPLICATIONS ="осложнения";
@@ -36,7 +34,6 @@ public final class MyAgentImpl extends MyAgent {
 	private static final String RECOMMENDED = "рекомендуемые";
 	private static final String DEFLECTABLE = "отклоняемые";
 	private static final String WARNING = "предупреждения";
-	private static final String INCOMPATIBLE = "несовместимая пара";
 	private static final String DRUG = "ЛС";
 	private static final String FEATURE = "особенность";
 	private static final String AGE = "возраст";
@@ -166,20 +163,6 @@ public final class MyAgentImpl extends MyAgent {
 
 				for (int i = 0; i < children.length; i++) {
 					String value = children[i].getValue();
-					list.add(value);
-				}
-				return list.toArray(new String[list.size()]);
-			}
-			return null;
-		}
-		
-		public String[] getPreparation() throws StorageException {
-			if (history.hasRelation(APPOINT)) {
-				IConcept[] preparation = history.gotoByMeta(APPOINT).nextSetByMeta(PREPARATION);
-				ArrayList<String> list = new ArrayList<String>();
-				
-				for (int i = 0; i < preparation.length; i++) {
-					String value = preparation[i].getName();
 					list.add(value);
 				}
 				return list.toArray(new String[list.size()]);

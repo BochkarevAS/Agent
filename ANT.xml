@@ -7,21 +7,35 @@
 		<zip destfile="./deploy/AgentFiltr.zip">
 			<zipfileset dir="./bin/ru/dvo/iacp/is/iacpaas/mas/agents" 
 				includes="AgentFiltr.class, AgentFiltrImpl.class, AgentFiltrImpl$Buffer.class, 
-					AgentFiltr$TaskMessageResultCreator.class"
+					      AgentFiltr$TaskMessageResultCreator.class, AgentFiltrImpl$FarmList.class"
 				prefix="ru/dvo/iacp/is/iacpaas/mas/agents"></zipfileset>
 		</zip>
 		
 		<zip destfile="./deploy/MyInitAgent.zip">
 			<zipfileset dir="./bin/ru/dvo/iacp/is/iacpaas/mas/agents" 
 				includes="MyInitAgent.class, MyInitAgentImpl.class, MyInitAgent$StatusMessageResultCreator.class, 
-				MyInitAgent$InitMessageResultCreator.class" prefix="ru/dvo/iacp/is/iacpaas/mas/agents"></zipfileset>
+						  MyInitAgent$InitMessageResultCreator.class" 
+				prefix="ru/dvo/iacp/is/iacpaas/mas/agents"></zipfileset>
 		</zip>
 		
 		<zip destfile="./deploy/MyAgent.zip">
 			<zipfileset dir="./bin/ru/dvo/iacp/is/iacpaas/mas/agents" 
 				includes="MyAgent.class, MyAgentImpl.class, MyAgent$TaskMessageResultCreator.class, 
-					MyAgentImpl$FarmList.class, MyAgentImpl$Drug.class, MyAgentImpl$Archive.class,
-					MyAgentImpl$Person.class, MyAgentImpl$Treatment.class, MyAgentImpl$Solver.class"
+					 	  MyAgentImpl$Archive.class, MyAgentImpl$Treatment.class, MyAgentImpl$Solver.class"
+				prefix="ru/dvo/iacp/is/iacpaas/mas/agents"></zipfileset>
+		</zip>
+		
+		<zip destfile="./deploy/InnitAgentTester.zip">
+			<zipfileset dir="./bin/ru/dvo/iacp/is/iacpaas/mas/agents" 
+				includes="InnitAgentTester.class, InnitAgentTesterImpl.class, InnitAgentTester$StatusMessageResultCreator.class, 
+						  InnitAgentTester$InitMessageResultCreator.class"
+				prefix="ru/dvo/iacp/is/iacpaas/mas/agents"></zipfileset>
+		</zip>
+		
+		<zip destfile="./deploy/AgentTester.zip">
+			<zipfileset dir="./bin/ru/dvo/iacp/is/iacpaas/mas/agents" 
+				includes="AgentTester.class, AgentTesterImpl.class, AgentTester$TaskMessageResultCreator.class, 
+					      AgentTesterImpl$MainTest.class"
 				prefix="ru/dvo/iacp/is/iacpaas/mas/agents"></zipfileset>
 		</zip>
 		

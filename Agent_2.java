@@ -13,15 +13,11 @@ import ru.dvo.iacp.is.iacpaas.storage.generator.IInforesourceGenerator;
 public final class AgentFiltrImpl extends AgentFiltr {
 
 	private static final String СONTRAIND = "противопоказания";
-	private static final String OTHER_DRUGS = "Взаимодействие с другими ЛС";
-	private static final String DRUGS = "ЛС";
 	private static final String LOWER_AGE = "нижний возраст";
 	private static final String ROOT = "объяснениеЛечения";
 	private static final String INFO_HISTORY = "инфо из ИБ";
 	private static final String RECOMMENDED = "рекомендуемые";
 	private static final String DEFLECTABLE = "отклоняемые";
-	private static final String WARNING = "предупреждения";
-	private static final String INCOMPATIBLE = "несовместимая пара";
 	private static final String DIAGNOSIS = "диагноз";
 	private static final String DRUG = "ЛС";
 	private static final String FEATURE = "особенность";
@@ -64,24 +60,6 @@ public final class AgentFiltrImpl extends AgentFiltr {
 			}
 			return null;
 		}
-
-		public boolean getInteraction(String name) throws StorageException {
-			IConcept drug = getDrug(name);
-			
-			if ((drug != null) && (drug.hasRelation(OTHER_DRUGS))) {
-				int counter = drug.gotoByMeta(OTHER_DRUGS).getChildren().length;
-
-				for (int j = 0; j < counter; j++) {
-					IConcept conceptOther = drug.gotoByMeta(OTHER_DRUGS).getChildren()[j];
-					String value = conceptOther.getChildren()[0].getValue();
-				
-					if (value.equals(drug)) {
-						return false;
-					}
-				}
-			}
-			return true;
-		}
 		
 		public double getAge(String name) throws StorageException {
 			IConcept drug = getDrug(name);
@@ -103,7 +81,7 @@ public final class AgentFiltrImpl extends AgentFiltr {
 			}
 			
 			allConceptsFarmList = infoFarmList.getAllConcepts();
-			children = allConceptsFarmList[0].nextSetByMeta(DRUGS); //ФармСправочник
+			children = allConceptsFarmList[0].nextSetByMeta(DRUG); //ФармСправочник
 		}
 	}
 	
